@@ -25,9 +25,11 @@ export async function getTasks() {
 
 export async function postTask(name) {
     try {
+
         const data = await axios.post(endpoint, {
             name: name,
-            date_of_create: new Date().toLocaleDateString()
+            date_of_create: new Date().toLocaleDateString(),
+            status: 'available'
         })
         return data
     } catch (error) {

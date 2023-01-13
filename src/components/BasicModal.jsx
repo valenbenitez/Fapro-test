@@ -3,15 +3,16 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import Modal from '@mui/material/Modal'
-import { postTask, updateTask } from '../services'
+import { postTask, updateTask, getTasks } from '../services'
 import ErrorIcon from '@mui/icons-material/Error'
+import CircularIndeterminate from './Progress'
 
 const style = {
   position: 'absolute',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 400,
+  width: 300,
   bgcolor: 'background.paper',
   border: '2px solid #B3B5BD',
   boxShadow: 24,
@@ -19,11 +20,12 @@ const style = {
   borderRadius: '10px',
 }
 
-export default function BasicModal({ open, setOpen, toUpdate = false, id = 0, setTasks, tasks }) {
+export default function BasicModal({ open, setOpen, toUpdate = false, id = 0, setTasks }) {
   const [input, setInput] = React.useState({
     name: '',
   })
   const [errors, setErrors] = React.useState({})
+  const [loading, setLoading] = React.useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
 
@@ -48,14 +50,30 @@ export default function BasicModal({ open, setOpen, toUpdate = false, id = 0, se
     }
     setErrors(error)
     if (Object.values(error).length === 0) {
+      setLoading(true)
       await postTask(input.name)
+      let allTasks = await getTasks()
+      allTasks = allTasks['data'].filter(task => task.status !== 'deleted')
+      setTasks(allTasks)
       setOpen(false)
+      setLoading(false)
     }
   }
 
   async function handleUpdate() {
+    const error = {}
+    if (input.name === '') {
+      error.name = 'Ingrese el nombre de la tarea para poder guardarla.'
+    }
+    setErrors(error)
+    setLoading(true)
+
     await updateTask(id, input.name)
+    let allTasks = await getTasks()
+    allTasks = allTasks['data'].filter(task => task.status !== 'deleted')
+    setTasks(allTasks)
     setOpen(false)
+    setLoading(false)
   }
 
   if (toUpdate) {
@@ -101,15 +119,17 @@ export default function BasicModal({ open, setOpen, toUpdate = false, id = 0, se
                     border: '2px solid #B3B5BD',
                     width: '80%',
                     marginBottom: '20px',
-                    // borderColor: errors['name'] ? 'red' : '#B3B5BD',
                   }}
                 ></input>
                 {errors['name'] && <ErrorIcon color="error" sx={{ marginTop: '8px', marginLeft: '6px' }} />}
               </div>
-
-              <Button disabled={input.name === '' ?? true} onClick={handleUpdate} variant="contained" color="inherit">
-                Guardar
-              </Button>
+              {loading ? (
+                <CircularIndeterminate color="inherit" />
+              ) : (
+                <Button disabled={input.name === '' ?? true} onClick={handleUpdate} variant="contained" color="inherit">
+                  Guardar
+                </Button>
+              )}
             </div>
           </Box>
         </Modal>
@@ -165,9 +185,13 @@ export default function BasicModal({ open, setOpen, toUpdate = false, id = 0, se
               {errors['name'] && <ErrorIcon color="error" sx={{ marginTop: '8px', marginLeft: '6px' }} />}
             </div>
 
-            <Button disabled={input.name === '' ?? true} onClick={handleSubmit} variant="contained" color="inherit">
-              Guardar
-            </Button>
+            {loading ? (
+              <CircularIndeterminate color="inherit" />
+            ) : (
+              <Button disabled={input.name === '' ?? true} onClick={handleSubmit} variant="contained" color="inherit">
+                Guardar
+              </Button>
+            )}
           </div>
         </Box>
       </Modal>

@@ -1,7 +1,7 @@
 import React from 'react'
 import AppBar from '../components/AppBar'
 import AddIcon from '@mui/icons-material/Add'
-import { getTasks, postTask } from '../services'
+import { getTasks } from '../services'
 import TaskCard from '../components/TaskCard'
 import { Divider } from '@mui/material'
 import BasicModal from '../components/BasicModal'
@@ -17,14 +17,10 @@ export default function Home() {
   React.useEffect(() => {
     getTasks().then(result => {
       setTasks(result['data'].filter(task => task.status !== 'deleted'))
-      setDeletedTasks(result['data'].filter(task => task.status === 'deleted'))
-      orderDeleted()
+      const deleted = result['data'].filter(task => task.status === 'deleted')
+      setDeletedTasks(deleted.reverse().slice(0, 5))
     })
-  }, [tasks])
-
-  function orderDeleted() {
-    setDeletedTasks(deletedTasks.slice(0, 5))
-  }
+  }, [])
 
   return (
     <>
@@ -57,7 +53,13 @@ export default function Home() {
           <Divider />
           {Object.values(tasks).length > 0 ? (
             tasks.map(task => (
-              <TaskCard key={task.id} name={task.name} date_of_create={task.date_of_create} id={task.id} />
+              <TaskCard
+                key={task.id}
+                name={task.name}
+                date_of_create={task.date_of_create}
+                id={task.id}
+                setTasks={setTasks}
+              />
             ))
           ) : (
             <div
@@ -76,7 +78,7 @@ export default function Home() {
           )}
         </div>
       </div>
-      <BasicModal open={open} setOpen={setOpen} />
+      <BasicModal open={open} setOpen={setOpen} setTasks={setTasks} />
       <DeletedBasicModal deletedOpen={deletedOpen} setDeletedOpen={setDeletedOpen} deletedTasks={deletedTasks} />
     </>
   )
