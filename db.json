@@ -1,0 +1,21 @@
+{
+  "tasks": [
+    {
+      "name": "Nueva tarea",
+      "date_of_create": "12/1/2023",
+      "status": "deleted",
+      "id": 1
+    },
+    {
+      "name": "Nueva tarea 1",
+      "date_of_create": "12/1/2023",
+      "status": "deleted",
+      "id": 2
+    },
+    {
+      "name": "Agregar tarea",
+      "date_of_create": "12/1/2023",
+      "id": 3
+    }
+  ]
+}
