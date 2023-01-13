@@ -18,7 +18,7 @@ export default function Home() {
     getTasks().then(result => {
       setTasks(result['data'].filter(task => task.status !== 'deleted'))
       const deleted = result['data'].filter(task => task.status === 'deleted')
-      setDeletedTasks(deleted.reverse().slice(0, 5))
+      setDeletedTasks(deleted.reverse().slice(0, 3))
     })
   }, [])
 
