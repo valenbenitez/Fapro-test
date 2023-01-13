@@ -2,10 +2,11 @@ import axios from "axios";
 
 const endpoint = 'https://fake-server.onrender.com/tasks'
 
-export async function updateTask(id, name) {
+export async function updateTask(id, name, description) {
     try {
         const data = await axios.put(`${endpoint}/${id}`, {
             name: name,
+            description: description,
             date_of_create: new Date().toLocaleDateString()
         })
         return data
@@ -23,11 +24,12 @@ export async function getTasks() {
     }
 }
 
-export async function postTask(name) {
+export async function postTask(name, description) {
     try {
 
         const data = await axios.post(endpoint, {
             name: name,
+            description: description,
             date_of_create: new Date().toLocaleDateString(),
             status: 'available'
         })
@@ -37,10 +39,11 @@ export async function postTask(name) {
     }
 }
 
-export async function deleteTask(id, name) {
+export async function deleteTask(id, name, description) {
     try {
         const data = await axios.put(`${endpoint}/${id}`, {
             name: name,
+            description: description,
             date_of_create: new Date().toLocaleDateString(),
             status: 'deleted',
         })

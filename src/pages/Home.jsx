@@ -59,6 +59,7 @@ export default function Home() {
                 date_of_create={task.date_of_create}
                 id={task.id}
                 setTasks={setTasks}
+                description={task.description}
               />
             ))
           ) : (

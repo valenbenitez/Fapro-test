@@ -23,6 +23,7 @@ const style = {
 export default function BasicModal({ open, setOpen, toUpdate = false, id = 0, setTasks }) {
   const [input, setInput] = React.useState({
     name: '',
+    description: '',
   })
   const [errors, setErrors] = React.useState({})
   const [loading, setLoading] = React.useState(false)
@@ -48,12 +49,26 @@ export default function BasicModal({ open, setOpen, toUpdate = false, id = 0, se
     if (input.name === '') {
       error.name = 'Ingrese el nombre de la tarea para poder guardarla.'
     }
+    if (input.description === '') {
+      error.description = 'Ingrese el nombre de la tarea para poder guardarla.'
+    }
     setErrors(error)
+    if (Object.values(error).length > 0) {
+      setInput({
+        name: '',
+        description: '',
+      })
+      return
+    }
     if (Object.values(error).length === 0) {
       setLoading(true)
-      await postTask(input.name)
+      await postTask(input.name, input.description)
       let allTasks = await getTasks()
       allTasks = allTasks['data'].filter(task => task.status !== 'deleted')
+      setInput({
+        name: '',
+        description: '',
+      })
       setTasks(allTasks)
       setOpen(false)
       setLoading(false)
@@ -65,12 +80,26 @@ export default function BasicModal({ open, setOpen, toUpdate = false, id = 0, se
     if (input.name === '') {
       error.name = 'Ingrese el nombre de la tarea para poder guardarla.'
     }
+    if (input.description === '') {
+      error.description = 'Ingrese el nombre de la tarea para poder guardarla.'
+    }
     setErrors(error)
+    if (Object.values(error).length > 0) {
+      setInput({
+        name: '',
+        description: '',
+      })
+      return
+    }
     setLoading(true)
 
-    await updateTask(id, input.name)
+    await updateTask(id, input.name, input.description)
     let allTasks = await getTasks()
     allTasks = allTasks['data'].filter(task => task.status !== 'deleted')
+    setInput({
+      name: '',
+      description: '',
+    })
     setTasks(allTasks)
     setOpen(false)
     setLoading(false)
@@ -112,7 +141,7 @@ export default function BasicModal({ open, setOpen, toUpdate = false, id = 0, se
                   onChange={e => handleChange(e)}
                   name="name"
                   type={'text'}
-                  placeholder="Agregar nueva tarea"
+                  placeholder="Nombre a cambiar"
                   style={{
                     padding: '12px',
                     borderRadius: '10px',
@@ -123,10 +152,31 @@ export default function BasicModal({ open, setOpen, toUpdate = false, id = 0, se
                 ></input>
                 {errors['name'] && <ErrorIcon color="error" sx={{ marginTop: '8px', marginLeft: '6px' }} />}
               </div>
+              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'normal' }}>
+                <input
+                  onChange={e => handleChange(e)}
+                  name="description"
+                  type={'text'}
+                  placeholder="Descripcion"
+                  style={{
+                    padding: '12px',
+                    borderRadius: '10px',
+                    border: '2px solid #B3B5BD',
+                    width: '80%',
+                    marginBottom: '20px',
+                  }}
+                ></input>
+                {errors['description'] && <ErrorIcon color="error" sx={{ marginTop: '8px', marginLeft: '6px' }} />}
+              </div>
               {loading ? (
                 <CircularIndeterminate color="inherit" />
               ) : (
-                <Button disabled={input.name === '' ?? true} onClick={handleUpdate} variant="contained" color="inherit">
+                <Button
+                  disabled={input.name === '' || input.description === '' ? true : false}
+                  onClick={handleUpdate}
+                  variant="contained"
+                  color="inherit"
+                >
                   Guardar
                 </Button>
               )}
@@ -184,11 +234,31 @@ export default function BasicModal({ open, setOpen, toUpdate = false, id = 0, se
               ></input>
               {errors['name'] && <ErrorIcon color="error" sx={{ marginTop: '8px', marginLeft: '6px' }} />}
             </div>
-
+            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'normal' }}>
+              <input
+                onChange={e => handleChange(e)}
+                name="description"
+                type={'text'}
+                placeholder="Descripcion"
+                style={{
+                  padding: '12px',
+                  borderRadius: '10px',
+                  border: '2px solid #B3B5BD',
+                  width: '80%',
+                  marginBottom: '20px',
+                }}
+              ></input>
+              {errors['description'] && <ErrorIcon color="error" sx={{ marginTop: '8px', marginLeft: '6px' }} />}
+            </div>
             {loading ? (
               <CircularIndeterminate color="inherit" />
             ) : (
-              <Button disabled={input.name === '' ?? true} onClick={handleSubmit} variant="contained" color="inherit">
+              <Button
+                disabled={input.name === '' || input.description === '' ? true : false}
+                onClick={handleSubmit}
+                variant="contained"
+                color="inherit"
+              >
                 Guardar
               </Button>
             )}
